@@ -1,13 +1,44 @@
-import React, { useState,useEffect } from 'react';
-import '../Mathematics/Maths.css'; 
-import HindiData from './HindiData.json'; 
-import HindiData2 from './HindiData2.json';
-
+import React, { useState, useEffect } from 'react';
+import '../Mathematics/Maths.css'; // Reusing same CSS
+import HindiData from './HindiData.json';
 
 export default function Hindi() {
   const [selectedChapter, setSelectedChapter] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const[selectedSChapter,setSelectedSChapter]= useState(null)
+
+  const slides = [
+    { img: "./images/Hindi-slide1.png", content: "Content for Slide 1" },
+    { img: "./images/Hindi-slide2.png", content: "Content for Slide 2" },
+    { img: "./images/Hindi-slide3.png", content: "Content for Slide 3" }
+  ];
+
+  const totalSlides = slides.length;
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % totalSlides);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [currentIndex, totalSlides]);
+
+  const [completedChapters, setCompletedChapters] = useState(() => {
+    return JSON.parse(localStorage.getItem('completedHindiChapters')) || {};
+  });
+
+  useEffect(() => {
+    localStorage.setItem('completedHindiChapters', JSON.stringify(completedChapters));
+  }, [completedChapters]);
+
+  const toggleChapterCompletion = (chapterId) => {
+    setCompletedChapters((prev) => {
+      const updated = { ...prev, [chapterId]: !prev[chapterId] };
+      return updated;
+    });
+  };
+
+  const completedCount = Object.values(completedChapters).filter(Boolean).length;
+  const progressPercentage = (completedCount / HindiData.length) * 100;
 
   const openPopup = (chapter) => {
     setSelectedChapter(chapter);
@@ -17,293 +48,158 @@ export default function Hindi() {
     setSelectedChapter(null);
   };
 
-  const openPopupS = (Schapter)=>{
-    setSelectedSChapter(Schapter)
-
-  }
-  const closePopupS = ()=>{
-    setSelectedSChapter(null);
-
-  } 
-
-  // ============ slider start =============
-  const slides = [
-    { img: "./images/slide1.png", content: "Content for Slide 1" },
-    { img: "./images/slide2.png", content: "Content for Slide 2" },
-    { img: "./images/slide3.png", content: "Content for Slide 3" }
-  ];
-
-  const totalSlides = slides.length;
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((currentIndex + 1) % totalSlides);
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, [currentIndex, totalSlides]);
-
   const showSlide = (index) => {
     setCurrentIndex(index);
   };
-  // ============ slider end =============
-
 
   return (
     <>
-     {/* ========== Hindi blueprint start =============== */}
-     <div className="container-blueprint">
-     <div className="card-blueprint blueprint-popup"> 
-       <img src="./images/mpboard.png" alt="Image 1" />
-       <div className="card-blueprint-content">
-        <a href> <h2>MP BOARD BLUEPRINT</h2></a>
-         <p>Hindi Blueprint</p>
-         
-       </div>
-     </div>
-     <div className="card-blueprint">
-       <img src="./images/cbscboard.png" alt="Image 2" />
-       <div className="card-blueprint-content">
-         <h2>CBSE BOARD BLUEPRINT</h2>
-         <p>Hindi Blueprint</p>
-       </div>
-     </div>
-     
-   </div>
-   {/* ========== maths blueprint end =============== */}
-
-   {/* ========== hindi slider start =============== */}
-   <div className="instruct-slider">
-     <h1>Instructions</h1>
-     <div className="slides" style={{ transform: `translateX(${-currentIndex * 100}%)` }}>
-       {slides.map((slide, index) => (
-         <div key={index} className="slide">
-           <img className="slider-images" src={slide.img} alt={`Slide ${index + 1}`} />
-           <br />
-           {slide.content}
-         </div>
-       ))}
-     </div>
-     <div className="navigation-dots">
-       {slides.map((_, index) => (
-         <span
-           key={index}
-           className={`dot ${currentIndex === index ? 'active' : ''}`}
-           onClick={() => showSlide(index)}
-         ></span>
-       ))}
-     </div>
-   </div>
-   {/* ========== hindi slider end =============== */}
-
-    {/* ========== hindi table start =============== */}
-    <div className="table-container">
-      <h2>HINDI (आरोह भाग - 2)</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>S no.</th>
-            <th>Chapters</th>
-            <th className="blueprint-num">Marks</th>
-            <th></th>
-          </tr>
-          {/* <tr className='kavyaKhand'><th>आरोह भाग - 2. काव्य खण्ड</th></tr> */}
-        </thead>
-        <tbody>
-          {HindiData.map((chapter) => (
-            <tr key={chapter.id} onClick={() => openPopup(chapter)}>
-              <td>{chapter.id}</td>
-              <td>{chapter.name}</td>
-              <td className="blueprint-num">{chapter.marks}</td>
-              <td className="delete-icon"></td>
-            </tr>
-          ))}
-          <tr>
-            <td>Total</td>
-            <td></td>
-            <td className="table-Total">80</td>
-            <td className="delete-icon"></td>
-          </tr>
-        </tbody>
-      </table>
-
-      {selectedChapter && (
-        <div className={`popup-container ${selectedChapter ? 'open' : ''}`}>
-          <div className="overlay open" onClick={closePopup}></div>
-          <div className="popup open" style={{border:'2px solid'}}>
-            <div className="popup-header">
-              <h2>HINDI DETAILS</h2>
-              <button className="popup-close" onClick={closePopup}>&times;</button>
-            </div>
-            <div className="popup-body">
-              <table>
-                <tbody>
-                <tr><th>S no.</th><td>{selectedChapter.id}</td><td>{selectedChapter.id}</td></tr>
-                  <tr><th>Chapter Name</th><td>{selectedChapter.name}</td><td>{selectedChapter.Hname}</td></tr>
-                  <tr><th>NCERT BOOK</th>
-                    <td><a href={selectedChapter.ncertLink} target="_blank" rel="noopener noreferrer">{selectedChapter.name}</a></td><td><a href={selectedChapter.HncertLink} target="_blank" rel="noopener noreferrer">{selectedChapter.Hname}</a></td>
-                  </tr>
-                  <tr><th>Chapter Solutions</th>
-                     <td className='chapterLinks'>
-                  
-                      <a className='C-links' href={selectedChapter.chapterLinks.chapterLink1} target="_blank" rel="noopener noreferrer">Solution 1</a><br/>
-                      <a className='C-links' href={selectedChapter.chapterLinks.chapterLink2} target="_blank" rel="noopener noreferrer">Solution 2</a><br/>
-                      <a className='C-links' href={selectedChapter.chapterLinks.chapterLink3} target="_blank" rel="noopener noreferrer">Solution 3</a><br/>
-
-                    </td>
-                    <td className='chapterLinks'>
-                  
-                      <a className='C-links' href={selectedChapter.HchapterLinks.HchapterLink1} target="_blank" rel="noopener noreferrer">Solution 1</a><br/>
-                      {/* <a className='C-links' href={selectedChapter.HchapterLinks.HchapterLink2} target="_blank" rel="noopener noreferrer">Solution 2</a><br/>
-                      <a className='C-links' href={selectedChapter.HchapterLinks.HchapterLink3} target="_blank" rel="noopener noreferrer">Solution 3</a><br/> */}
-
-                    </td> 
-                  </tr>
-                  <tr><th>YouTube Links</th>
-                    <td className='youtubeLinks'>
-                    
-                {selectedChapter.youtubeLinks.youtubeLinks1 && (
-                        <a className='C-links' href={selectedChapter.youtubeLinks.youtubeLinks1} target="_blank" rel="noopener noreferrer">YouTube Solution 1</a>
-                      )}
-                      {selectedChapter.youtubeLinks.youtubeLinks2 && (
-                        <a className='C-links' href={selectedChapter.youtubeLinks.youtubeLinks2} target="_blank" rel="noopener noreferrer">YouTube Solution 2</a>
-                      )}
-                      {selectedChapter.youtubeLinks.youtubeLinks3 && (
-                        <a className='C-links' href={selectedChapter.youtubeLinks.youtubeLinks3} target="_blank" rel="noopener noreferrer">YouTube Solution 3</a>
-                      )}
-
-                     
-                    </td>
-                    <td className='youtubeLinks'>
-                    
-                {selectedChapter.youtubeLinks.youtubeLinks1 && (
-                        <a className='C-links' href={selectedChapter.HyoutubeLinks.HyoutubeLinks1} target="_blank" rel="noopener noreferrer">YouTube Solution 1</a>
-                      )}
-                      {/* {selectedChapter.youtubeLinks.youtubeLinks2 && (
-                        <a className='C-links' href={selectedChapter.HyoutubeLinks.HyoutubeLinks2} target="_blank" rel="noopener noreferrer">YouTube Solution 2</a>
-                      )} */}
-                      {/* {selectedChapter.youtubeLinks.youtubeLinks3 && (
-                        <a className='C-links' href={selectedChapter.HyoutubeLinks.HyoutubeLinks3} target="_blank" rel="noopener noreferrer">YouTube Solution 3</a>
-                      )} */}
-
-                     
-                    </td>
-                    
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+      {/* Blueprint Section */}
+      <div className="container-blueprint">
+        <div className="card-blueprint blueprint-popup"> 
+          <img src="./images/mpboard.png" alt="MP Board" />
+          <div className="card-blueprint-content">
+            <a href='https://www.mpbse.nic.in/MARKING%20SCHEME_2024_25.pdf'><h2>MP BOARD BLUEPRINT</h2></a>
+            <p>Hindi Blueprint</p>
           </div>
         </div>
-      )}
-    </div>
-     {/* ========== hindi table end =============== */}
-
-       {/* ================ Second Table ================  */}
-<div className="table-container">
-       <h2>HINDI (वितान भाग - 2 )</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>S no.</th>
-            <th>Chapters</th>
-            <th className="blueprint-num">Marks</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {HindiData2.map((Schapter) => (
-            <tr key={Schapter.id} onClick={() => openPopupS(Schapter)}>
-              <td>{Schapter.id}</td>
-              <td>{Schapter.Sname}</td>
-              <td className="blueprint-num">{Schapter.SHname}</td>
-              <td className="delete-icon"></td>
-            </tr>
-          ))}
-          <tr>
-            <td>Total</td>
-            <td></td>
-            <td className="table-Total">80</td>
-            <td className="delete-icon"></td>
-          </tr>
-        </tbody>
-      </table>
-
-      {selectedSChapter && (
-        <div className={`popup-container ${selectedSChapter ? 'open' : ''}`}>
-          <div className="overlay open" onClick={closePopupS}></div>
-          <div className="popup open" style={{border:'2px solid'}}>
-            <div className="popup-header">
-              <h2>ENGLISH DETAILS</h2>
-              <button className="popup-close" onClick={closePopupS}>&times;</button>
-            </div>
-            <div className="popup-body">
-              <table>
-                <tbody>
-                <tr><th>S no.</th><td>{selectedSChapter.id}</td><td>{selectedSChapter.id}</td></tr>
-                  <tr><th>Chapter Name</th><td>{selectedSChapter.Sname}</td><td>{selectedSChapter.SHname}</td></tr>
-                  <tr><th>NCERT BOOK</th>
-                    <td><a href={selectedSChapter.SncertLink} target="_blank" rel="noopener noreferrer">{selectedSChapter.Sname}</a></td><td><a href={selectedSChapter.SHncertLink} target="_blank" rel="noopener noreferrer">{selectedSChapter.SHname}</a></td>
-                  </tr>
-                  <tr><th>Chapter Solutions</th>
-                     <td className='chapterLinks'>
-                  
-                      <a className='C-links' href={selectedSChapter.SchapterLinks.SchapterLink1} target="_blank" rel="noopener noreferrer">Solution 1</a><br/>
-                      <a className='C-links' href={selectedSChapter.SchapterLinks.SchapterLink2} target="_blank" rel="noopener noreferrer">Solution 2</a><br/>
-                      <a className='C-links' href={selectedSChapter.SchapterLinks.SchapterLink3} target="_blank" rel="noopener noreferrer">Solution 3</a><br/>
-
-                    </td>
-                    <td className='chapterLinks'>
-                  
-                      <a className='C-links' href={selectedSChapter.SHchapterLinks.SHchapterLink1} target="_blank" rel="noopener noreferrer">Solution 1</a><br/>
-                      {/* <a className='C-links' href={selectedChapter.HchapterLinks.HchapterLink2} target="_blank" rel="noopener noreferrer">Solution 2</a><br/>
-                      <a className='C-links' href={selectedChapter.HchapterLinks.HchapterLink3} target="_blank" rel="noopener noreferrer">Solution 3</a><br/> */}
-
-                    </td> 
-                  </tr>
-                  <tr><th>YouTube Links</th>
-                    <td className='youtubeLinks'>
-                    
-                {selectedSChapter.SyoutubeLinks.SyoutubeLinks1 && (
-                        <a className='C-links' href={selectedSChapter.SyoutubeLinks.SyoutubeLinks1} target="_blank" rel="noopener noreferrer">YouTube Solution 1</a>
-                      )}
-                      {selectedSChapter.SyoutubeLinks.SyoutubeLinks2 && (
-                        <a className='C-links' href={selectedSChapter.SyoutubeLinks.SyoutubeLinks2} target="_blank" rel="noopener noreferrer">YouTube Solution 2</a>
-                      )}
-                      {selectedSChapter.SyoutubeLinks.SyoutubeLinks3 && (
-                        <a className='C-links' href={selectedSChapter.SyoutubeLinks.SyoutubeLinks3} target="_blank" rel="noopener noreferrer">YouTube Solution 3</a>
-                      )}
-
-                     
-                    </td>
-                    <td className='youtubeLinks'>
-                    
-                {selectedSChapter.SyoutubeLinks.SyoutubeLinks1 && (
-                        <a className='C-links' href={selectedSChapter.SHyoutubeLinks.SHyoutubeLinks1} target="_blank" rel="noopener noreferrer">YouTube Solution 1</a>
-                      )}
-                      {/* {selectedChapter.youtubeLinks.youtubeLinks2 && (
-                        <a className='C-links' href={selectedChapter.HyoutubeLinks.HyoutubeLinks2} target="_blank" rel="noopener noreferrer">YouTube Solution 2</a>
-                      )} */}
-                      {/* {selectedChapter.youtubeLinks.youtubeLinks3 && (
-                        <a className='C-links' href={selectedChapter.HyoutubeLinks.HyoutubeLinks3} target="_blank" rel="noopener noreferrer">YouTube Solution 3</a>
-                      )} */}
-
-                     
-                    </td>
-                    
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+        <div className="card-blueprint">
+          <img src="./images/cbscboard.png" alt="CBSE Board" />
+          <div className="card-blueprint-content">
+            <a href='https://cbseacademic.nic.in/web_material/CurriculumMain25/SrSec/Hindi_SrSec_2024-25.pdf'><h2>CBSE BOARD BLUEPRINT</h2></a>
+            <p>Hindi Blueprint</p>
           </div>
         </div>
-      )}
-    
-      {/* ========== second table  end =============== */}
+      </div>
+
+      {/* Instructions Slider */}
+      <div className="instruct-slider">
+        <h1>Instructions</h1>
+        <div className="slides" style={{ transform: `translateX(${-currentIndex * 100}%)` }}>
+          {slides.map((slide, index) => (
+            <div key={index} className="slide">
+              <img className="slider-images" src={slide.img} alt={`Slide ${index + 1}`} />
+              <br />
+              {slide.content}
+            </div>
+          ))}
+        </div>
+        <div className="navigation-dots">
+          {slides.map((_, index) => (
+            <span
+              key={index}
+              className={`dot ${currentIndex === index ? 'active' : ''}`}
+              onClick={() => showSlide(index)}
+            ></span>
+          ))}
+        </div>
+      </div>
+
+      {/* Hindi Table */}
+      <div className="table-container">
+        <h2>HINDI</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>
+                <div className="progress-container">
+                  <label>Progress: {Math.round(progressPercentage)}%</label>
+                  <div className="progress-bar">
+                    <div className="progress-fill" style={{ width: `${progressPercentage}%` }}></div>
+                  </div>
+                  <p style={{ marginTop: "20px" }}>{completedCount}/{HindiData.length} chapters completed</p>
+                </div>
+              </th>
+              <th>S no.</th>
+              <th>Chapters</th>
+              <th className="blueprint-num">अध्याय</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {HindiData.map((chapter) => (
+              <tr key={chapter.id}>
+                <td>
+                  <input
+                    type="checkbox"
+                    checked={!!completedChapters[chapter.id]}
+                    onChange={(e) => {
+                      e.stopPropagation();
+                      toggleChapterCompletion(chapter.id);
+                    }}
+                  />
+                </td>
+                <td onClick={() => openPopup(chapter)}>{chapter.id}</td>
+                <td onClick={() => openPopup(chapter)}>{chapter.name}</td>
+                <td onClick={() => openPopup(chapter)} className="blueprint-num">{chapter.Hname}</td>
+                <td onClick={() => openPopup(chapter)} className="delete-icon"></td>
+              </tr>
+            ))}
+            <tr>
+              <td></td>
+              <td>Total</td>
+              <td></td>
+              <td className="table-Total">{/* total count here, e.g. HindiData.length or fixed */}</td>
+              <td className="delete-icon"></td>
+            </tr>
+          </tbody>
+        </table>
+
+        {selectedChapter && (
+          <div className={`popup-container ${selectedChapter ? 'open' : ''}`}>
+            <div className="overlay open" onClick={closePopup}></div>
+            <div className="popup open" style={{ border: '2px solid' }}>
+              <div className="popup-header">
+                <h2>Hindi</h2>
+                <button className="popup-close" onClick={closePopup}>&times;</button>
+              </div>
+              <div className="popup-body">
+                <table>
+                  <tbody>
+                    <tr><th>S no.</th><td>{selectedChapter.id}</td><td>{selectedChapter.id}</td></tr>
+                    <tr><th>Chapter Name</th><td>{selectedChapter.name}</td><td>{selectedChapter.Hname}</td></tr>
+                    <tr>
+                      <th>NCERT BOOK</th>
+                      <td><a href={selectedChapter.ncertLink} target="_blank" rel="noopener noreferrer">{selectedChapter.name}</a></td>
+                      <td><a href={selectedChapter.HncertLink} target="_blank" rel="noopener noreferrer">{selectedChapter.Hname}</a></td>
+                    </tr>
+                    <tr>
+                      <th>Chapter Solutions</th>
+                      <td className='chapterLinks'>
+                        <a className='C-links' href={selectedChapter.chapterLinks.chapterLink1} target="_blank" rel="noopener noreferrer">Solution 1</a><br />
+                        <a className='C-links' href={selectedChapter.chapterLinks.chapterLink2} target="_blank" rel="noopener noreferrer">Solution 2</a><br />
+                        <a className='C-links' href={selectedChapter.chapterLinks.chapterLink3} target="_blank" rel="noopener noreferrer">Solution 3</a><br />
+                      </td>
+                      <td className='chapterLinks'>
+                        <a className='C-links' href={selectedChapter.HchapterLinks.HchapterLink1} target="_blank" rel="noopener noreferrer">Solution 1</a><br />
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>YouTube Links</th>
+                      <td className='youtubeLinks'>
+                        {selectedChapter.youtubeLinks.youtubeLinks1 && (
+                          <a className='C-links' href={selectedChapter.youtubeLinks.youtubeLinks1} target="_blank" rel="noopener noreferrer">YouTube Solution 1</a>
+                        )}
+                        {selectedChapter.youtubeLinks.youtubeLinks2 && (
+                          <a className='C-links' href={selectedChapter.youtubeLinks.youtubeLinks2} target="_blank" rel="noopener noreferrer">YouTube Solution 2</a>
+                        )}
+                        {selectedChapter.youtubeLinks.youtubeLinks3 && (
+                          <a className='C-links' href={selectedChapter.youtubeLinks.youtubeLinks3} target="_blank" rel="noopener noreferrer">YouTube Solution 3</a>
+                        )}
+                      </td>
+                      <td className='youtubeLinks'>
+                        {selectedChapter.HyoutubeLinks.HyoutubeLinks1 && (
+                          <a className='C-links' href={selectedChapter.HyoutubeLinks.HyoutubeLinks1} target="_blank" rel="noopener noreferrer">YouTube Solution 1</a>
+                        )}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );
 }
-
-
- 

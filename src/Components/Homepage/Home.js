@@ -24,7 +24,7 @@ export default function Home() {
 
   <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
     <li><a class="dropdown-item"  style={{cursor:'pointer'}}on onClick={()=>{localStorage.removeItem("loggedInUser"); window.location.reload();}}>Logout</a></li>
-    {/* <li><Link to = "/dashboard" class="dropdown-item" style={{cursor:'pointer'}}>Dashboard</Link></li> */}
+   <li><Link to = "/dashboard" class="dropdown-item" style={{cursor:'pointer'}}>Dashboard</Link></li>
     
   </ul>
 </div> : <Link to="/login">Login</Link>}

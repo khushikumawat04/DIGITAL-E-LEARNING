@@ -5,7 +5,7 @@ import '../Footer/Footer.css'
 export default function Footer() {
   return (
     <div>
-        <div className="footer">
+        <div className="footer py-3">
         <div className="text">
             <h3>Address</h3>
             <p>H-83,Ravindra Nagar<br/> 

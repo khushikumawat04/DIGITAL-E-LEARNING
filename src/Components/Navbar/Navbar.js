@@ -17,7 +17,7 @@ export default function Navbar() {
 
   return (
     <div>
-      <header className='mainNav'>
+      <header className='mainNav '>
         <h2><a href="#" style={{color:"#fff", textDecoration:"none"}}>DIGITAL E-LEARNING</a></h2>
         <div className='menu-toggle' onClick={toggleMenu}>
           <i className={`fa-solid ${isOpen ? 'fa-times' : 'fa-bars'}`}></i>

@@ -24,12 +24,12 @@ export default function Maths() {
   }, [currentIndex, totalSlides]);
   // progresss
   const [completedChapters, setCompletedChapters] = useState(() => {
-    return JSON.parse(localStorage.getItem('completedChapters')) || {};
+    return JSON.parse(localStorage.getItem('completedMathsChapters')) || {};
   });
 
 
   useEffect(() => {
-    localStorage.setItem('completedChapters', JSON.stringify(completedChapters));
+    localStorage.setItem('completedMathsChapters', JSON.stringify(completedChapters));
   }, [completedChapters]);
 
   const toggleChapterCompletion = (chapterId) => {
